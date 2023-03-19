@@ -1,3 +1,5 @@
 /.vscode
 /Sorting C
 /test.c
+*.exe
+*.o
