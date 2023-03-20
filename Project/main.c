@@ -83,12 +83,10 @@ char ** read_file(char *filename)
     return lines;
 }
 
-
 struct keyValuePair {
     char *key;
     char *value;
 };
-
 
 struct section {
     char *name;
@@ -96,7 +94,6 @@ struct section {
     struct keyValuePair *keysValues;
     int numKeysValues; // used to iterate through keyValuePairs in the structure
 };
-
 
 char ** string_split(char str[], char separators[]) {
     char **strings = malloc(16 * sizeof(char*));
@@ -127,6 +124,25 @@ char * add_brackets(char str[]) {
     sprintf(new_str, "[%s]", str);
     return new_str;
 }
+
+
+/*
+ * Returns the value located under given section and key
+ * 
+ * Parameters:
+ *      char **lines - an array of strings representing every line
+ *                of the .ini file
+ *      char *sectionName - the section in which the given key should
+ *                          be located
+ *      char *key - the key which should lead to the value
+ * 
+ * Returns:
+ *      char * - value at given location
+ * 
+ * The returned value is ought to be freed.
+ */
+
+// TODO check the way this function looks for sectionNames
 
 char *get_value(char **lines, char *sectionName, char *key) {
     int indexBegin = 0;
@@ -163,6 +179,7 @@ char *get_value(char **lines, char *sectionName, char *key) {
             flag = 1;
             value = strdup(splittedLine[2]);
         }
+
         free(lineToSplit);
         for (int i = 0; splittedLine[i] != NULL; i++) 
             free(splittedLine[i]);
@@ -192,7 +209,6 @@ struct section* parse_ini_file(char **lines) {
     for (int i = 0; lines[i] != NULL; i++) {
         line = lines[i];
         lineLength = strlen(line);
-        printf("%s", line);
         if (line[0] == '[' && line[lineLength - 2] == ']') {
             sectionID++;
             numberOfSections++;
@@ -233,14 +249,26 @@ struct section* parse_ini_file(char **lines) {
             free(lineToSplit);
             for (int i = 0; splittedLine[i] != NULL; i++) 
                 free(splittedLine[i]);
-            free(key);
-            free(value);
         }
     }
-    // for (int j = 0; sections[2].keysValues[j].key != NULL; j++){
-    //     printf("%s  %s", sections[2].keysValues[j].key, sections[2].keysValues[j].value);
-    // }
     return sections;
+}
+
+char *get_value_structured(struct section *sections, char* sectionName, char*key) {
+    char *value;
+    for (int i = 0; sections[i].name != NULL; i++) {
+        if (strcmp(sections[i].name, sectionName) == 0) {
+            for (int j = 0; j < sections[i].numKeysValues; j++) {
+                if (strcmp(sections[i].keysValues[j].key, key) == 0) {
+                    printf("%s", sections[i].keysValues[j].value);
+                    value = sections[i].keysValues[j].value;
+                    break;
+                }
+            }
+            break;
+        }
+    }
+    return value;
 }
 
 
@@ -249,15 +277,10 @@ int main(int argc, char **argv) {
     // char ** parameters = string_split(argv[2], ".");
     // char *value = get_value(lines, add_brackets(parameters[0]), parameters[1]);
     // printf("%s", value);
-    struct section* sections = parse_ini_file(lines);
-    // for (int i = 0; sections[i].name != NULL; i++){
-    //     printf("Section: [%s]\n", sections[i].name);
-    //     for (int j = 0; j < sections[i].numKeysValues; j++) {
-    //         printf("%s %s\n", sections[i].keysValues[j].key, sections[i].keysValues[j].value);
-    //     }
-    // }
 
-    printf("X");
+    struct section* sections = parse_ini_file(lines);
+    char *val = get_value_structured(sections, "worse-dramatic-rusty-gorgeous-attached-presence", "lonely-every-quaint-homely-fabulous-progress");
+    printf("\n%s", val);
 
     // freeing the contents of the file
     for (int i = 0; lines[i] != NULL; i++) 
@@ -268,7 +291,5 @@ int main(int argc, char **argv) {
     // for (int i = 0; parameters[i] != NULL; i++) 
     //     free(parameters[i]);
     // free(parameters);
-
-    // free(value);
     return 0;
 }
