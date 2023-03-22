@@ -7,6 +7,10 @@
 #define ALLOC_LINES 512
 #define ALLOC_CHARS 512
 
+// TODO question 1: can comments appear anywhere in the file?
+// TODO question 2: is there always a space between key and = (value and =)
+// TODO question 3: what to do if the value or section name is invalid
+
 char ** read_file(char *filename)
 {
     FILE *file = fopen(filename, "r");
@@ -160,9 +164,8 @@ struct section* structurize_data(char **lines) {
             continue;
         }
 
-        numKeyValues++;
-
-        if (strlen(lines[i]) != 1) {
+        if (strlen(lines[i]) != 1 && lines[i][0] != ';') {
+            numKeyValues++;
             char *lineToSplit = strdup(lines[i]);
             char **splittedArray = split(lineToSplit, " ");
 
@@ -288,10 +291,9 @@ int checkIfProper(struct section *sections, char *sectionName, char *key) {
 int main(int argc, char *argv[]) {
     char *filename = argv[1];
     char **lines = read_file(filename);
+    printf("Data successfully read.\n");
     struct section* sections = structurize_data(lines);
-
-
-
+    printf("Data successfully structurized.\n");
 
     if(strcmp(argv[2], "expression") == 0) {
         char **initExpression = split(argv[3], "\"");
