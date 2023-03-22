@@ -239,16 +239,17 @@ struct section* parse_ini_file(char **lines) {
             strcpy(value, splittedLine[2]);
             value[strcspn(value, "\n")] = '\0';
 
-            sections[sectionID].keysValues = realloc(sections[sectionID].keysValues, sizeof(struct keyValuePair) * numKeyValues);
+            sections[sectionID].keysValues = realloc(sections[sectionID].keysValues, sizeof(struct keyValuePair) * (numKeyValues + 1));
 
             struct keyValuePair *pair = &sections[sectionID].keysValues[numKeyValues - 1];
             pair->key = key;
             pair->value = value;
             sections[sectionID].numKeysValues = numKeyValues;
             
+            int size = sizeof(splittedLine);
             free(lineToSplit);
-            for (int i = 0; splittedLine[i] != NULL; i++) 
-                free(splittedLine[i]);
+            for (int j = 0; splittedLine[j] != NULL; j++) 
+                free(splittedLine[j]);
         }
     }
     return sections;
