@@ -123,11 +123,14 @@ char ** split(char *sentence, char separators[]) {
     char *ptr = strtok(sentence, separators);
     int numberOfWords = 0;
 
-
+    // loop ends if there are three words in the array
+    // or there are no more than two words in the text to split
     while(ptr != NULL) {
         splitArray[numberOfWords] = strdup(ptr);
         numberOfWords++;
         ptr = strtok(NULL, separators);
+        if(numberOfWords == 3)
+            break;
     }
     splitArray = realloc(splitArray, sizeof(splitArray) * sizeof(char *));
     return splitArray;
@@ -295,118 +298,120 @@ int main(int argc, char *argv[]) {
     struct section* sections = structurize_data(lines);
     printf("Data successfully structurized.\n");
 
-    if(strcmp(argv[2], "expression") == 0) {
-        char **initExpression = split(argv[3], "\"");
-        char **expression = split(initExpression[0], " ");
-        char *sign = expression[1];
-        char **firstExpression = split(expression[0], ".");
-        char **secondExpression = split(expression[2], ".");
 
-        if (!checkIfProper(sections, firstExpression[0], firstExpression[1])) {
-            char *value = get_value(sections, firstExpression[0], firstExpression[1]);
-            printf("%s\n", value);
-        }
-        else if (!checkIfProper(sections, secondExpression[0], secondExpression[1])) {
-            char *value = get_value(sections, secondExpression[0], secondExpression[1]);
-            printf("%s\n", value);
-        }
-        else {
-            char *value1 = get_value(sections, firstExpression[0], firstExpression[1]);
-            char *value2 = get_value(sections, secondExpression[0], secondExpression[1]);
+    // // identify the expression command 
+    // if(strcmp(argv[2], "expression") == 0) {
+    //     char **initExpression = split(argv[3], "\"");
+    //     char **expression = split(initExpression[0], " ");
+    //     char *sign = expression[1];
+    //     char **firstExpression = split(expression[0], ".");
+    //     char **secondExpression = split(expression[2], ".");
 
-            int mode = isNumber(value1) + isNumber(value2);
-            switch (mode) {
-                case 0: 
-                    switch(*sign) {
-                        case '+':
-                            strcat(value1, value2);
-                            puts(value1);
-                            break;
-                        default:
-                            printf("Unsupported operand type.\n");
-                            break;
-                    }
-                    break;
+    //     if (!checkIfProper(sections, firstExpression[0], firstExpression[1])) {
+    //         char *value = get_value(sections, firstExpression[0], firstExpression[1]);
+    //         printf("%s\n", value);
+    //     }
+    //     else if (!checkIfProper(sections, secondExpression[0], secondExpression[1])) {
+    //         char *value = get_value(sections, secondExpression[0], secondExpression[1]);
+    //         printf("%s\n", value);
+    //     }
+    //     else {
+    //         char *value1 = get_value(sections, firstExpression[0], firstExpression[1]);
+    //         char *value2 = get_value(sections, secondExpression[0], secondExpression[1]);
 
-                case 1: 
-                    printf("Expressions involving operands of different types are invalid.\n");
-                    break;
+    //         int mode = isNumber(value1) + isNumber(value2);
+    //         switch (mode) {
+    //             case 0: 
+    //                 switch(*sign) {
+    //                     case '+':
+    //                         strcat(value1, value2);
+    //                         puts(value1);
+    //                         break;
+    //                     default:
+    //                         printf("Unsupported operand type.\n");
+    //                         break;
+    //                 }
+    //                 break;
+
+    //             case 1: 
+    //                 printf("Expressions involving operands of different types are invalid.\n");
+    //                 break;
 
 
-                case 2: 
-                    int a = atoi(value1);
-                    int b = atoi(value2);
+    //             case 2: 
+    //                 int a = atoi(value1);
+    //                 int b = atoi(value2);
 
-                    switch(*sign) {
-                        case '+':
-                            printf("%d\n", a+b);
-                            break;
-                        case '-':
-                            printf("%d\n", a-b);
-                            break;
-                        case '*':
-                            printf("%ld\n", (long) a*b);
-                            break;
-                        case '/':
-                            printf("%f\n", ((float) a / (float) b));
-                            break;
-                        default:
-                            printf("Unsupported operand type.\n");
-                            break;
-                    }
-                    break;
-            }
-            free(value1);
-            free(value2);
-        }
-        for (int i = 0; i < 2; i++) {
-            free(firstExpression[i]);
-            free(secondExpression[i]);
-        }
+    //                 switch(*sign) {
+    //                     case '+':
+    //                         printf("%d\n", a+b);
+    //                         break;
+    //                     case '-':
+    //                         printf("%d\n", a-b);
+    //                         break;
+    //                     case '*':
+    //                         printf("%ld\n", (long) a*b);
+    //                         break;
+    //                     case '/':
+    //                         printf("%f\n", ((float) a / (float) b));
+    //                         break;
+    //                     default:
+    //                         printf("Unsupported operand type.\n");
+    //                         break;
+    //                 }
+    //                 break;
+    //         }
+    //         free(value1);
+    //         free(value2);
+    //     }
+    //     for (int i = 0; i < 2; i++) {
+    //         free(firstExpression[i]);
+    //         free(secondExpression[i]);
+    //     }
         
-        free(expression[0]);
-        free(expression[1]);
-        free(expression[2]);
-        free(expression);
+    //     free(expression[0]);
+    //     free(expression[1]);
+    //     free(expression[2]);
+    //     free(expression);
 
-        free(firstExpression);
-        free(secondExpression);
+    //     free(firstExpression);
+    //     free(secondExpression);
 
-        free(initExpression[0]);
-        free(initExpression);
-    }
+    //     free(initExpression[0]);
+    //     free(initExpression);
+    // }
 
+    // // if not expression command then: ./main example.ini section.key
+    // else {
+    //     char **addressOfValue = split(argv[2], ".");
 
-    else {
-        char **addressOfValue = split(argv[2], ".");
+    //     char *value = get_value(sections, addressOfValue[0], addressOfValue[1]);
+    //     printf("%s\n", value);
 
-        char *value = get_value(sections, addressOfValue[0], addressOfValue[1]);
-        printf("%s\n", value);
-
-        free(value);
-        free(addressOfValue[0]);
-        free(addressOfValue[1]);
-        free(addressOfValue);
-    }
-
-
+    //     free(value);
+    //     free(addressOfValue[0]);
+    //     free(addressOfValue[1]);
+    //     free(addressOfValue);
+    // }
 
 
 
 
-    // memory deallocation
-    for (int i = 0; sections[i].name != NULL; i++) {
-        for (int j = 0; j < sections[i].numKeysValues; j++) {
-            free(sections[i].keysValues[j].key);
-            free(sections[i].keysValues[j].value);
-        }
-        free(sections[i].keysValues);
-    }
-    free(sections);
 
-    for (int i = 0; lines[i] != NULL; i++) {
-        free(lines[i]);
-    }
-    free(lines);
+
+    // // memory deallocation
+    // for (int i = 0; sections[i].name != NULL; i++) {
+    //     for (int j = 0; j < sections[i].numKeysValues; j++) {
+    //         free(sections[i].keysValues[j].key);
+    //         free(sections[i].keysValues[j].value);
+    //     }
+    //     free(sections[i].keysValues);
+    // }
+    // free(sections);
+
+    // for (int i = 0; lines[i] != NULL; i++) {
+    //     free(lines[i]);
+    // }
+    // free(lines);
     return 0;
 }
