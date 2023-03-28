@@ -301,6 +301,30 @@ int checkIfAlnum(char *sectionName, char *key) {
     return 1;
 }
 
+int ifAlnumDashes(char *word){
+    for (int i = 0; i < strlen(word); i++) {
+        if (isalnum(word[i]) == 0 && word[i] != '-') {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+void detectInvalidIdentifiers(struct section* sections) {
+    for (int i = 0; sections[i].name != NULL; i++) {
+        if (ifAlnumDashes(sections[i].name) == 0) {
+            printf("Invalid section name [%s] found in file.\n", sections[i].name);
+            exit(0);
+        }
+        for (int j = 0; j < sections[i].numKeysValues; j++) {
+            if (ifAlnumDashes(sections[i].keysValues[j].key) == 0) {
+                printf("Invalid key [%s] found in file.\n", sections[i].keysValues[j].key);
+                exit(0);
+            }
+        }
+    }
+}
+
 // TODO create a function that would check if the key or section has invalid name
 // invalid names are those containing smothing beyond dashes, letters and numbers
 
@@ -308,7 +332,7 @@ int main(int argc, char *argv[]) {
     char *filename = argv[1];
     char **lines = read_file(filename);
     struct section* sections = structurize_data(lines);
-
+    detectInvalidIdentifiers(sections);
     // // identify the expression command 
     if(strcmp(argv[2], "expression") == 0) {
         char **initExpression = split(argv[3], "\"");
