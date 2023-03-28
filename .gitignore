@@ -3,4 +3,4 @@
 /test.c
 *.exe
 *.o
-Linux Edition/main
+main
